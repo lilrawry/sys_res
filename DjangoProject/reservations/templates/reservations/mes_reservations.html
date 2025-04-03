@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes Réservations{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Mes Réservations</h1>
+
+        {% if reservations %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Salle</th>
+                        <th>Date</th>
+                        <th>Heure début</th>
+                        <th>Heure fin</th>
+                        <th>Participants</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'reservations:detail_salle' reservation.salle.id %}">
+                                {{ reservation.salle.nom }}
+                            </a>
+                        </td>
+                        <td>{{ reservation.date|date:"d/m/Y" }}</td>
+                        <td>{{ reservation.heure_debut|time:"H:i" }}</td>
+                        <td>{{ reservation.heure_fin|time:"H:i" }}</td>
+                        <td>{{ reservation.nombre_participants }}</td>
+                        <td>
+                            {% if reservation.statut == 'en_attente' %}
+                            <span class="badge bg-warning">En attente</span>
+                            {% elif reservation.statut == 'confirmee' %}
+                            <span class="badge bg-success">Confirmée</span>
+                            {% elif reservation.statut == 'annulee' %}
+                            <span class="badge bg-danger">Annulée</span>
+                            {% else %}
+                            <span class="badge bg-info">Terminée</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reservation.statut != 'annulee' and reservation.statut != 'terminee' %}
+                                {% if reservation.date > today %}
+                                <div class="btn-group">
+                                    <a href="{% url 'reservations:modifier_reservation' reservation.id %}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        Modifier
+                                    </a>
+                                    <a href="{% url 'reservations:annuler_reservation' reservation.id %}" 
+                                       class="btn btn-sm btn-outline-danger"
+                                       onclick="return confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')">
+                                        Annuler
+                                    </a>
+                                </div>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            Vous n'avez aucune réservation pour le moment.
+            <a href="{% url 'reservations:liste_salles' %}" class="alert-link">Voir les salles disponibles</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

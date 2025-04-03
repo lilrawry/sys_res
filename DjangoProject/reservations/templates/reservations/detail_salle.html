@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ salle.nom }} - Détails{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        {% if salle.image %}
+        <img src="{{ salle.image.url }}" class="img-fluid rounded mb-4" alt="{{ salle.nom }}">
+        {% endif %}
+        
+        <h1>{{ salle.nom }}</h1>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Informations</h5>
+                <p class="card-text">
+                    <strong>Capacité:</strong> {{ salle.capacite }} personnes<br>
+                    <strong>Prix:</strong> {{ salle.prix_par_heure }}€/heure<br>
+                    <strong>Disponibilité:</strong> 
+                    {% if salle.disponible %}
+                    <span class="badge bg-success">Disponible</span>
+                    {% else %}
+                    <span class="badge bg-danger">Non disponible</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        {% if salle.description %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Description</h5>
+                <p class="card-text">{{ salle.description|linebreaks }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if salle.equipements %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Équipements</h5>
+                <p class="card-text">{{ salle.equipements|linebreaks }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Réservation</h5>
+                {% if salle.disponible %}
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'reservations:reserver_salle' salle.id %}" class="btn btn-primary btn-lg w-100">Réserver cette salle</a>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <p>Vous devez être connecté pour réserver cette salle.</p>
+                        <a href="{% url 'login' %}" class="btn btn-primary">Se connecter</a>
+                    </div>
+                    {% endif %}
+                {% else %}
+                <div class="alert alert-warning">
+                    Cette salle n'est pas disponible pour le moment.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Réservations à venir</h5>
+                {% if reservations %}
+                <ul class="list-group list-group-flush">
+                    {% for reservation in reservations %}
+                    <li class="list-group-item">
+                        <strong>{{ reservation.date|date:"d/m/Y" }}</strong><br>
+                        {{ reservation.heure_debut|time:"H:i" }} - {{ reservation.heure_fin|time:"H:i" }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">Aucune réservation à venir.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Modifier la réservation{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title mb-0">Modifier la réservation</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <h5>Informations de la réservation</h5>
+                    <p class="mb-0">
+                        <strong>Salle:</strong> {{ reservation.salle.nom }}<br>
+                        <strong>Date actuelle:</strong> {{ reservation.date|date:"d/m/Y" }}<br>
+                        <strong>Heure début actuelle:</strong> {{ reservation.heure_debut|time:"H:i" }}<br>
+                        <strong>Heure fin actuelle:</strong> {{ reservation.heure_fin|time:"H:i" }}
+                    </p>
+                </div>
+
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% if field.errors %}
+                        <div class="alert alert-danger mt-1">
+                            {{ field.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Enregistrer les modifications</button>
+                        <a href="{% url 'reservations:mes_reservations' %}" class="btn btn-outline-secondary">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
